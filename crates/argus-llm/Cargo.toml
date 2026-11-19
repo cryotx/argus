@@ -1,0 +1,26 @@
+[package]
+name = "argus-llm"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "LLM provider management, routing, failover, budget tracking"
+
+[dependencies]
+argus-core = { workspace = true }
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+chrono = { workspace = true }
+uuid = { workspace = true }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+reqwest = { workspace = true }
+async-trait = { workspace = true }
+futures = { workspace = true }
+dashmap = { workspace = true }
+tokio-stream = { workspace = true }
+
+[dev-dependencies]
+toml = { workspace = true }

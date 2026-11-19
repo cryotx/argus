@@ -1,0 +1,112 @@
+# ============================================================
+# Argus Default Configuration
+# ============================================================
+#
+# Copy this file to `config/argus.toml` and adjust values.
+# Environment variables override file values (see docs).
+#
+# All durations are in seconds unless noted otherwise.
+
+# --- Database ---
+[database]
+url = "postgres://argus:argus@localhost:5432/argus"
+max_connections = 20
+min_connections = 2
+connect_timeout_seconds = 10
+idle_timeout_seconds = 600
+run_migrations = true
+
+# --- Web Dashboard / API Server ---
+[server]
+host = "127.0.0.1"
+port = 3100
+enabled = true
+
+# --- Worker Pool ---
+[worker]
+max_pool_size = 8
+default_sandbox = "directory"       # directory | docker | none
+idle_timeout_seconds = 300
+task_timeout_seconds = 3600
+preferred_type = "opencode"         # opencode | claude_code | aider | generic_cli
+
+# --- Execution ---
+[execution]
+default_worker = "codex"            # codex | claude_code
+
+# --- LLM Providers ---
+[llm]
+default_provider = "nvidia"
+monthly_budget_usd = 0.0            # 0 = unlimited
+budget_warning_threshold = 0.8      # warn when 80% consumed
+failover_chain = []                 # e.g. ["anthropic", "openai", "deepseek"]
+enable_cache = true
+
+# --- Memory System ---
+[memory]
+short_term_ttl_hours = 72
+decay_rate = 0.01                   # importance reduction per day
+consolidation_interval_seconds = 3600
+promotion_threshold = 0.7           # importance above this → long-term
+max_working_memory_tokens = 8000
+recall_top_k = 10
+similarity_threshold = 0.6
+
+# --- Notifications ---
+[notification]
+disturbance_level = "normal"        # minimal | normal | verbose
+active_hours_start = "08:00"
+active_hours_end = "23:00"
+platform_priority = []              # e.g. ["telegram", "discord"]
+digest_schedule = "hourly"
+
+# --- Social Integrations ---
+[social.qq]
+enabled = false
+app_id = ""
+app_secret = ""
+bot_secret = ""
+api_base_url = "https://api.sgroup.qq.com"
+token_url = "https://bots.qq.com/app/getAppAccessToken"
+
+# --- Security ---
+[security]
+master_key_env = "ARGUS_MASTER_KEY"
+sandbox_mode = "directory"          # directory | docker | none
+blocked_commands = []
+protected_paths = []
+forbidden_content_markers = []
+secret_keywords = []
+default_actor_role = "developer"     # owner | admin | developer | viewer
+audit_level = "standard"            # minimal | standard | verbose
+
+# --- Scheduler ---
+[scheduler]
+max_concurrent_tasks = 16
+default_priority = "medium"
+max_retries = 3
+checkpoint_interval_seconds = 60
+
+# --- Auto Iteration Loop (project-level perpetual development) ---
+[autoloop]
+enabled = false
+max_tasks_per_iteration = 20
+max_minutes_per_iteration = 60
+max_cost_usd_per_iteration = 3.0
+retry_limit_per_task = 2
+require_acceptance_criteria = true
+require_test_commands = true
+require_human_approval_on = ["deploy_prod", "security_high", "budget_exceeded"]
+
+# --- Logging ---
+[logging]
+level = "info"                      # trace | debug | info | warn | error
+format = "pretty"                   # json | pretty
+# directory = "/var/log/argus"      # uncomment for file logging
+rotation = "daily"                  # daily | hourly | never
+
+# --- System ---
+[system]
+data_dir = ".argus"
+backup_schedule = "daily"           # daily | weekly | cron expr | disabled
+event_bus_capacity = 4096

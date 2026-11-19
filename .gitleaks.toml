@@ -1,0 +1,15 @@
+title = "Argus public-source secret scanning"
+
+[extend]
+useDefault = true
+
+# Exact, deliberately public values used by examples and security tests.
+# Real credentials and entire files are never allowlisted.
+[[allowlists]]
+description = "Documented placeholder and deterministic test fixtures"
+regexTarget = "secret"
+regexes = [
+  '^replace-with-32-byte-secret$',
+  '^0123456789abcdef0123456789abcdef$',
+  '^sk-(1234567890abcdefghijklmnop)$',
+]

@@ -1,0 +1,99 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/argus-core",
+    "crates/argus-llm",
+    "crates/argus-memory",
+    "crates/argus-worker",
+    "crates/argus-mcp",
+    "crates/argus-skills",
+    "crates/argus-git",
+    "crates/argus-deploy",
+    "crates/argus-social",
+    "crates/argus-monitor",
+    "crates/argus-security",
+    "crates/argus-cli",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+rust-version = "1.85"
+
+[workspace.dependencies]
+# Internal crates
+argus-core = { path = "crates/argus-core" }
+argus-llm = { path = "crates/argus-llm" }
+argus-memory = { path = "crates/argus-memory" }
+argus-worker = { path = "crates/argus-worker" }
+argus-mcp = { path = "crates/argus-mcp" }
+argus-skills = { path = "crates/argus-skills" }
+argus-git = { path = "crates/argus-git" }
+argus-deploy = { path = "crates/argus-deploy" }
+argus-social = { path = "crates/argus-social" }
+argus-monitor = { path = "crates/argus-monitor" }
+argus-security = { path = "crates/argus-security" }
+
+# Async
+tokio = { version = "1", features = ["full"] }
+tokio-stream = "0.1"
+tokio-util = { version = "0.7", features = ["codec"] }
+futures = "0.3"
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+toml = "0.8"
+
+# Error handling
+thiserror = "2"
+anyhow = "1"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+tracing-appender = "0.2"
+
+# Date/time
+chrono = { version = "0.4", features = ["serde"] }
+
+# IDs
+uuid = { version = "1", features = ["v4", "serde"] }
+
+# Concurrent data structures
+dashmap = "6"
+
+# HTTP
+reqwest = { version = "0.12", features = ["json", "stream", "rustls-tls"], default-features = false }
+axum = { version = "0.8", features = ["json"] }
+tower = "0.5"
+
+# Database
+sqlx = { version = "0.8", features = ["runtime-tokio", "tls-rustls", "postgres", "uuid", "chrono", "json", "migrate"] }
+
+# Async traits
+async-trait = "0.1"
+
+# Crypto / encoding
+ed25519-dalek = "2"
+hex = "0.4"
+
+# CLI
+clap = { version = "4", features = ["derive"] }
+dotenvy = "0.15"
+
+# Embedding
+fastembed = "5"
+
+# pgvector
+pgvector = { version = "0.4", features = ["sqlx"] }
+
+# Regex
+regex = "1"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = true
+opt-level = 3

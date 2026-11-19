@@ -1,0 +1,46 @@
+[package]
+name = "argus-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "CLI entry point, argument parsing, daemon mode"
+
+[[bin]]
+name = "argus"
+path = "src/main.rs"
+
+[dependencies]
+argus-core = { workspace = true }
+argus-llm = { workspace = true }
+argus-memory = { workspace = true }
+argus-social = { workspace = true }
+argus-mcp = { workspace = true }
+argus-security = { workspace = true }
+argus-skills = { workspace = true }
+argus-worker = { workspace = true }
+argus-git = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+tracing-appender = { workspace = true }
+clap = { workspace = true }
+dotenvy = { workspace = true }
+anyhow = { workspace = true }
+sqlx = { workspace = true }
+axum = { workspace = true }
+tower = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+toml = { workspace = true }
+async-trait = { workspace = true }
+futures = { workspace = true }
+ed25519-dalek = { workspace = true }
+hex = { workspace = true }
+uuid = { workspace = true }
+chrono = { workspace = true }
+
+[dev-dependencies]
+# Real-HTTP E2E tests (agent_pipeline_e2e, execution_loop_e2e) drive the
+# actual `argus run` daemon over its HTTP API.
+reqwest = { workspace = true }

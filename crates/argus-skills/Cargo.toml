@@ -1,0 +1,19 @@
+[package]
+name = "argus-skills"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "Skills runtime, built-in skills, skill generator"
+
+[dependencies]
+argus-core = { workspace = true }
+argus-security = { workspace = true }
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+chrono = { workspace = true }
+uuid = { workspace = true }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }

@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="340" viewBox="0 0 1200 340" role="img" aria-labelledby="title desc">
+  <title id="title">ARGUS</title>
+  <desc id="desc">A durable control plane for coding agents. Persist state, execute in isolation, verify the result.</desc>
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#07111e"/><stop offset="1" stop-color="#102c37"/></linearGradient>
+    <linearGradient id="accent"><stop stop-color="#6ee7b7"/><stop offset="1" stop-color="#67e8f9"/></linearGradient>
+    <radialGradient id="glow"><stop stop-color="#34d399" stop-opacity=".15"/><stop offset="1" stop-color="#34d399" stop-opacity="0"/></radialGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" fill="none" stroke="#d1fae5" stroke-opacity=".035"/></pattern>
+  </defs>
+  <rect width="1200" height="340" rx="20" fill="url(#bg)"/>
+  <rect width="1200" height="340" rx="20" fill="url(#grid)"/>
+  <rect x=".5" y=".5" width="1199" height="339" rx="20" fill="none" stroke="#6ee7b7" stroke-opacity=".2"/>
+  <circle cx="965" cy="170" r="210" fill="url(#glow)"/>
+  <g font-family="Arial, Helvetica, sans-serif">
+    <rect x="56" y="42" width="190" height="25" rx="12.5" fill="#6ee7b7" fill-opacity=".09" stroke="#6ee7b7" stroke-opacity=".2"/>
+    <circle cx="71" cy="54.5" r="3" fill="#6ee7b7"/>
+    <text x="84" y="59" font-size="10" font-weight="700" letter-spacing="1.5" fill="#a7f3d0">CODING AGENT PLATFORM</text>
+    <text x="52" y="153" font-size="82" font-weight="800" letter-spacing="9" fill="#f0fdfa">ARGUS</text>
+    <text x="57" y="192" font-size="20" fill="#b8cfdb">A durable control plane for coding agents.</text>
+    <text x="57" y="223" font-size="14" fill="#7998ac">Persist the state. Isolate the work. Verify the result.</text>
+    <g font-size="10" font-weight="700" letter-spacing="1.5">
+      <rect x="57" y="265" width="133" height="29" rx="7" fill="#ffffff" fill-opacity=".035" stroke="#ffffff" stroke-opacity=".1"/>
+      <circle cx="73" cy="279.5" r="3" fill="#6ee7b7"/><text x="86" y="283" fill="#cde7df">PROJECT STATE</text>
+      <rect x="203" y="265" width="139" height="29" rx="7" fill="#ffffff" fill-opacity=".035" stroke="#ffffff" stroke-opacity=".1"/>
+      <circle cx="219" cy="279.5" r="3" fill="#67e8f9"/><text x="232" y="283" fill="#cde7df">GIT WORKTREES</text>
+      <rect x="355" y="265" width="155" height="29" rx="7" fill="#ffffff" fill-opacity=".035" stroke="#ffffff" stroke-opacity=".1"/>
+      <circle cx="371" cy="279.5" r="3" fill="#a5b4fc"/><text x="384" y="283" fill="#cde7df">VERIFIED OUTPUTS</text>
+    </g>
+  </g>
+  <g transform="translate(963 164)" fill="none">
+    <circle r="118" stroke="#6ee7b7" stroke-opacity=".09"/>
+    <circle r="99" stroke="#67e8f9" stroke-opacity=".17" stroke-dasharray="3 12"/>
+    <path d="M-140 0Q0-129 140 0Q0 129-140 0Z" fill="#6ee7b7" fill-opacity=".025" stroke="url(#accent)" stroke-width="2"/>
+    <circle r="54" stroke="url(#accent)" stroke-width="2"/>
+    <circle r="39" stroke="#6ee7b7" stroke-opacity=".3"/>
+    <circle r="19" fill="url(#accent)"/>
+    <circle cx="-7" cy="-7" r="5" fill="#ecfeff"/>
+    <path d="M-175 0H-145M145 0H175M0-147V-126M0 126V147" stroke="#67e8f9" stroke-opacity=".4"/>
+    <circle cx="-140" r="4" fill="#6ee7b7"/><circle cx="140" r="4" fill="#67e8f9"/>
+  </g>
+</svg>

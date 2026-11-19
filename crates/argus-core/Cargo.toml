@@ -1,0 +1,33 @@
+[package]
+name = "argus-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "Core business logic: Brain Engine, Task Scheduler, Config, Event Bus"
+
+[dependencies]
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+chrono = { workspace = true }
+uuid = { workspace = true }
+dashmap = { workspace = true }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+toml = { workspace = true }
+sqlx = { workspace = true }
+async-trait = "0.1"
+regex = { workspace = true }
+sha2 = "0.10"
+hex = { workspace = true }
+
+[dev-dependencies]
+# Test-only: real Git worktree verification for V0.38 Phase 3 E2E tests.
+# The library itself never depends on argus-git (argus-git depends on
+# argus-core, not the other way around); this edge exists only for the
+# `tests/` integration binaries.
+argus-git = { workspace = true }
+tempfile = "3"
+tracing-subscriber = { workspace = true }

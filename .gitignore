@@ -1,0 +1,30 @@
+/target/
+**/*.rs.bk
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Editor
+.DS_Store
+.idea/
+.vscode/
+
+# Local model cache
+.fastembed_cache/
+
+.argus/
+.qoder/
+*.tsbuildinfo
+
+# Private runtime configuration (setup.sh creates these from examples)
+/config/argus.toml
+/config/providers.toml
+
+# Local agent sessions and internal audits
+.claude/*
+!.claude/settings.json
+.codex/
+/ARGUS_AUDIT.md
+*.log

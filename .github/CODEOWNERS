@@ -1,0 +1,16 @@
+# Default ownership for all files
+* @cryotx
+
+# Core closed-loop sensitive areas
+/crates/argus-core/** @cryotx
+/crates/argus-security/** @cryotx
+/crates/argus-deploy/** @cryotx
+
+# Operational guardrails and CI policy
+/.github/workflows/** @cryotx
+/scripts/** @cryotx
+
+# High-level release and architecture docs
+/docs/CLOSED_LOOP_CHECKLIST.md @cryotx
+/docs/ARCHITECTURE.md @cryotx
+/docs/SECURITY.md @cryotx

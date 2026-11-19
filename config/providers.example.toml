@@ -1,0 +1,22 @@
+[global]
+default_model_class = "coding"
+max_monthly_budget_usd = 200.0
+max_daily_budget_usd = 20.0
+max_per_task_budget_usd = 0.5
+
+[providers.nvidia]
+enabled = true
+type = "openai_compatible"
+priority = 1
+base_url = "https://integrate.api.nvidia.com/v1"
+api_keys = ["${NVIDIA_API_KEY}"]
+monthly_budget_usd = 200.0
+
+[[providers.nvidia.models]]
+id = "z-ai/glm4.7"
+class = "coding"
+
+[embedding]
+type = "local"
+model = "multilingual-e5-large"
+dimension = 1024

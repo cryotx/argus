@@ -1,0 +1,404 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Argus API",
+    "version": "0.1.0",
+    "description": "Single contract source for the Argus server and dashboard."
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/status": {
+      "get": {"operationId": "getStatus", "responses": {"200": {"description": "System status"}}}
+    },
+    "/scheduler/stats": {
+      "get": {"operationId": "getSchedulerStats", "responses": {"200": {"description": "Scheduler statistics"}}}
+    },
+    "/projects": {
+      "get": {"operationId": "listProjects", "responses": {"200": {"description": "Projects", "content": {"application/json": {"schema": {"type": "array", "items": {"$ref": "#/components/schemas/Project"}}}}}}},
+      "post": {"operationId": "createProject", "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/CreateProject"}}}}, "responses": {"201": {"description": "Created project", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Project"}}}}, "401": {"description": "Authentication required"}, "403": {"description": "Permission denied"}, "503": {"description": "Audit unavailable; action not executed"}}, "security": [{"bearerAuth": []}]}
+    },
+    "/tasks": {
+      "get": {"operationId": "listTasks", "parameters": [{"name": "project_id", "in": "query", "schema": {"type": "string", "format": "uuid"}}], "responses": {"200": {"description": "Tasks", "content": {"application/json": {"schema": {"type": "array", "items": {"$ref": "#/components/schemas/Task"}}}}}}},
+      "post": {"operationId": "createTask", "parameters": [{"name": "Idempotency-Key", "in": "header", "schema": {"type": "string"}}], "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/CreateTask"}}}}, "responses": {"200": {"description": "Existing idempotent task"}, "201": {"description": "Created task", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Task"}}}}, "401": {"description": "Authentication required"}, "403": {"description": "Permission denied"}, "503": {"description": "Audit unavailable; action not executed"}}, "security": [{"bearerAuth": []}]}
+    },
+    "/tasks/{task_id}": {
+      "get": {"operationId": "getTask", "parameters": [{"name": "task_id", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}], "responses": {"200": {"description": "Task"}, "404": {"description": "Task not found"}}}
+    },
+    "/deployments": {
+      "get": {"operationId": "listDeployments", "responses": {"200": {"description": "Deployments", "content": {"application/json": {"schema": {"type": "array", "items": {"$ref": "#/components/schemas/Deployment"}}}}}}}
+    },
+    "/events": {
+      "get": {"operationId": "streamEvents", "responses": {"200": {"description": "Task and deployment event stream", "content": {"text/event-stream": {"schema": {"type": "string"}}}}}}
+    },
+    "/logs": {
+      "get": {"operationId": "listLogs", "responses": {"200": {"description": "Persisted audit actions; no example log data"}}}
+    },
+    "/llm-usage": {
+      "get": {"operationId": "listLlmUsage", "responses": {"200": {"description": "LLM usage"}}}
+    },
+    "/config": {
+      "get": {"operationId": "getConfig", "responses": {"200": {"description": "Configuration"}}},
+      "put": {"operationId": "updateConfig", "responses": {"401": {"description": "Authentication required"}, "403": {"description": "Permission denied"}, "501": {"description": "Configuration is read-only; update the configuration file and restart"}, "503": {"description": "Audit unavailable; action not executed"}}, "security": [{"bearerAuth": []}]}
+    },
+    "/openapi.json": {
+      "get": {"operationId": "getOpenApi", "responses": {"200": {"description": "This contract"}}}
+    },
+    "/projects/{project_id}/work-items/{work_item_id}/evaluate": {
+      "post": {"operationId": "evaluateWorkItem", "parameters": [{"name": "project_id", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}, {"name": "work_item_id", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}], "responses": {"200": {"description": "Persist evaluation and promote only verified work"}, "404": {"description": "Project or work item not found"}, "409": {"description": "Evidence or state conflicts"}, "401": {"description": "Authentication required"}, "403": {"description": "Permission denied"}, "503": {"description": "Audit unavailable; action not executed"}}, "security": [{"bearerAuth": []}]}
+    },
+    "/projects/{project_id}/work-items/{work_item_id}/evaluations": {
+      "get": {"operationId": "listWorkItemEvaluations", "parameters": [{"name": "project_id", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}, {"name": "work_item_id", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}], "responses": {"200": {"description": "Last 100 durable evaluation reports"}, "404": {"description": "Project or work item not found"}, "409": {"description": "Evidence or state conflicts"}}}
+    },
+    "/projects/{project_id}/work-items/{work_item_id}/accept": {
+      "post": {"operationId": "acceptWorkItem", "parameters": [{"name": "project_id", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}, {"name": "work_item_id", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}], "responses": {"204": {"description": "Explicit admin acceptance of a current passing evaluation"}, "404": {"description": "Project or work item not found"}, "409": {"description": "Evidence or state conflicts"}, "401": {"description": "Authentication required"}, "403": {"description": "Permission denied"}, "503": {"description": "Audit unavailable; action not executed"}}, "security": [{"bearerAuth": []}], "requestBody": {"required": true, "content": {"application/json": {"schema": {"type": "object", "additionalProperties": false, "required": ["evaluation_id"], "properties": {"evaluation_id": {"type": "string", "format": "uuid"}}}}}}}
+    },
+    "/projects/{project_id}/work-items/{work_item_id}/tasks/{task_id}": {
+      "post": {"operationId": "linkWorkItemTask", "parameters": [{"name": "project_id", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}, {"name": "work_item_id", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}, {"name": "task_id", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}], "responses": {"204": {"description": "Link a same-project execution task"}, "404": {"description": "Project or work item not found"}, "409": {"description": "Evidence or state conflicts"}, "401": {"description": "Authentication required"}, "403": {"description": "Permission denied"}, "503": {"description": "Audit unavailable; action not executed"}}, "security": [{"bearerAuth": []}]}
+    },
+    "/projects/{project_id}/state": {
+      "get": {"operationId": "getProjectState", "responses": {"200": {"description": "Successful response"}}, "parameters": [{"name": "project_id", "in": "path", "required": true, "schema": {"type": "string"}}]}
+    },
+    "/projects/{project_id}/snapshot": {
+      "get": {"operationId": "getProjectSnapshot", "responses": {"200": {"description": "Successful response"}}, "parameters": [{"name": "project_id", "in": "path", "required": true, "schema": {"type": "string"}}]}
+    },
+    "/projects/{project_id}/roadmap": {
+      "get": {"operationId": "getProjectRoadmap", "responses": {"200": {"description": "Successful response"}}, "parameters": [{"name": "project_id", "in": "path", "required": true, "schema": {"type": "string"}}]}
+    },
+    "/projects/{project_id}/progress": {
+      "get": {"operationId": "getProjectProgress", "responses": {"200": {"description": "Successful response"}}, "parameters": [{"name": "project_id", "in": "path", "required": true, "schema": {"type": "string"}}]}
+    },
+    "/projects/{project_id}/progress/diff": {
+      "get": {"operationId": "getProjectProgressDiff", "responses": {"200": {"description": "Successful response"}}, "parameters": [{"name": "project_id", "in": "path", "required": true, "schema": {"type": "string"}}]}
+    },
+    "/projects/{project_id}/progress/record": {
+      "post": {"operationId": "recordProjectProgress", "responses": {"200": {"description": "Successful response"}, "401": {"description": "Authentication required"}, "403": {"description": "Permission denied"}, "503": {"description": "Audit unavailable; action not executed"}}, "parameters": [{"name": "project_id", "in": "path", "required": true, "schema": {"type": "string"}}], "security": [{"bearerAuth": []}]}
+    },
+    "/projects/{project_id}/context/compile": {
+      "post": {"operationId": "compileProjectContext", "responses": {"200": {"description": "Successful response"}, "401": {"description": "Authentication required"}, "403": {"description": "Permission denied"}, "503": {"description": "Audit unavailable; action not executed"}}, "parameters": [{"name": "project_id", "in": "path", "required": true, "schema": {"type": "string"}}], "security": [{"bearerAuth": []}]}
+    },
+    "/projects/{project_id}/intelligence/classify": {
+      "post": {"operationId": "classifyTask", "responses": {"200": {"description": "Successful response"}, "401": {"description": "Authentication required"}, "403": {"description": "Permission denied"}, "503": {"description": "Audit unavailable; action not executed"}}, "parameters": [{"name": "project_id", "in": "path", "required": true, "schema": {"type": "string"}}], "security": [{"bearerAuth": []}]}
+    },
+    "/projects/{project_id}/routing/stats": {
+      "get": {"operationId": "getRoutingStats", "responses": {"200": {"description": "Successful response"}}, "parameters": [{"name": "project_id", "in": "path", "required": true, "schema": {"type": "string"}}]}
+    },
+    "/routing/{routing_id}/outcome": {
+      "post": {"operationId": "recordRoutingOutcome", "responses": {"200": {"description": "Successful response"}, "401": {"description": "Authentication required"}, "403": {"description": "Permission denied"}, "503": {"description": "Audit unavailable; action not executed"}}, "parameters": [{"name": "routing_id", "in": "path", "required": true, "schema": {"type": "string"}}], "security": [{"bearerAuth": []}]}
+    },
+    "/routing/{routing_id}/failure": {
+      "post": {"operationId": "recordRoutingFailure", "responses": {"200": {"description": "Successful response"}, "401": {"description": "Authentication required"}, "403": {"description": "Permission denied"}, "503": {"description": "Audit unavailable; action not executed"}}, "parameters": [{"name": "routing_id", "in": "path", "required": true, "schema": {"type": "string"}}], "security": [{"bearerAuth": []}]}
+    },
+    "/projects/{project_id}/planning/requests": {
+      "post": {"operationId": "createPlanningRequest", "responses": {"200": {"description": "Successful response"}, "401": {"description": "Authentication required"}, "403": {"description": "Permission denied"}, "503": {"description": "Audit unavailable; action not executed"}}, "parameters": [{"name": "project_id", "in": "path", "required": true, "schema": {"type": "string"}}], "security": [{"bearerAuth": []}]}
+    },
+    "/planning/requests/{request_id}/packet": {
+      "get": {"operationId": "getPlanningPacket", "responses": {"200": {"description": "Successful response"}}, "parameters": [{"name": "request_id", "in": "path", "required": true, "schema": {"type": "string"}}]}
+    },
+    "/planning/results/import": {
+      "post": {"operationId": "importPlanningResult", "responses": {"200": {"description": "Successful response"}, "401": {"description": "Authentication required"}, "403": {"description": "Permission denied"}, "503": {"description": "Audit unavailable; action not executed"}}, "security": [{"bearerAuth": []}]}
+    },
+    "/planning/proposals/{proposal_id}": {
+      "get": {"operationId": "getPlanningProposal", "responses": {"200": {"description": "Successful response"}}, "parameters": [{"name": "proposal_id", "in": "path", "required": true, "schema": {"type": "string"}}]}
+    },
+    "/planning/proposals/{proposal_id}/diff": {
+      "get": {"operationId": "getPlanningProposalDiff", "responses": {"200": {"description": "Successful response"}}, "parameters": [{"name": "proposal_id", "in": "path", "required": true, "schema": {"type": "string"}}]}
+    },
+    "/planning/proposals/{proposal_id}/approve": {
+      "post": {"operationId": "approvePlanningProposal", "responses": {"200": {"description": "Successful response"}, "401": {"description": "Authentication required"}, "403": {"description": "Permission denied"}, "503": {"description": "Audit unavailable; action not executed"}}, "parameters": [{"name": "proposal_id", "in": "path", "required": true, "schema": {"type": "string"}}], "security": [{"bearerAuth": []}]}
+    },
+    "/planning/proposals/{proposal_id}/reject": {
+      "post": {"operationId": "rejectPlanningProposal", "responses": {"200": {"description": "Successful response"}, "401": {"description": "Authentication required"}, "403": {"description": "Permission denied"}, "503": {"description": "Audit unavailable; action not executed"}}, "parameters": [{"name": "proposal_id", "in": "path", "required": true, "schema": {"type": "string"}}], "security": [{"bearerAuth": []}]}
+    },
+    "/planning/proposals/{proposal_id}/apply": {
+      "post": {"operationId": "applyPlanningProposal", "responses": {"200": {"description": "Successful response"}, "401": {"description": "Authentication required"}, "403": {"description": "Permission denied"}, "503": {"description": "Audit unavailable; action not executed"}}, "parameters": [{"name": "proposal_id", "in": "path", "required": true, "schema": {"type": "string"}}], "security": [{"bearerAuth": []}]}
+    },
+    "/providers": {
+      "get": {"operationId": "listProviders", "responses": {"200": {"description": "Successful response"}}}
+    },
+    "/providers/status": {
+      "get": {"operationId": "providersStatus", "responses": {"200": {"description": "Successful response"}}}
+    },
+    "/providers/{provider_id}/models": {
+      "get": {"operationId": "listProviderModels", "responses": {"200": {"description": "Successful response"}}, "parameters": [{"name": "provider_id", "in": "path", "required": true, "schema": {"type": "string"}}]}
+    },
+    "/auth-profiles": {
+      "get": {"operationId": "listAuthProfiles", "responses": {"200": {"description": "Successful response"}}},
+      "post": {"operationId": "registerAuthProfile", "responses": {"200": {"description": "Successful response"}, "401": {"description": "Authentication required"}, "403": {"description": "Permission denied"}, "503": {"description": "Audit unavailable; action not executed"}}, "security": [{"bearerAuth": []}]}
+    },
+    "/auth-profiles/{auth_profile_id}/quota": {
+      "get": {"operationId": "getAuthQuota", "responses": {"200": {"description": "Successful response"}}, "parameters": [{"name": "auth_profile_id", "in": "path", "required": true, "schema": {"type": "string"}}]}
+    },
+    "/auth-profiles/{auth_profile_id}/quota/refresh": {
+      "post": {"operationId": "refreshAuthQuota", "responses": {"200": {"description": "Successful response"}, "401": {"description": "Authentication required"}, "403": {"description": "Permission denied"}, "503": {"description": "Audit unavailable; action not executed"}}, "parameters": [{"name": "auth_profile_id", "in": "path", "required": true, "schema": {"type": "string"}}], "security": [{"bearerAuth": []}]}
+    },
+    "/projects/{project_id}/provider-routing/select": {
+      "post": {"operationId": "selectProviderRoute", "responses": {"200": {"description": "Successful response"}, "401": {"description": "Authentication required"}, "403": {"description": "Permission denied"}, "503": {"description": "Audit unavailable; action not executed"}}, "parameters": [{"name": "project_id", "in": "path", "required": true, "schema": {"type": "string"}}], "security": [{"bearerAuth": []}]}
+    },
+    "/projects/{project_id}/provider-routing/policy": {
+      "get": {"operationId": "getProviderPolicy", "responses": {"200": {"description": "Successful response"}}, "parameters": [{"name": "project_id", "in": "path", "required": true, "schema": {"type": "string"}}]},
+      "put": {"operationId": "upsertProviderPolicy", "responses": {"200": {"description": "Successful response"}, "401": {"description": "Authentication required"}, "403": {"description": "Permission denied"}, "503": {"description": "Audit unavailable; action not executed"}}, "parameters": [{"name": "project_id", "in": "path", "required": true, "schema": {"type": "string"}}], "security": [{"bearerAuth": []}]}
+    },
+    "/projects/{project_id}/provider-routing/selections": {
+      "get": {"operationId": "listProviderSelections", "responses": {"200": {"description": "Successful response"}}, "parameters": [{"name": "project_id", "in": "path", "required": true, "schema": {"type": "string"}}]}
+    },
+    "/projects/{project_id}/milestones": {
+      "post": {"operationId": "createMilestoneState", "responses": {"200": {"description": "Successful response"}, "401": {"description": "Authentication required"}, "403": {"description": "Permission denied"}, "503": {"description": "Audit unavailable; action not executed"}}, "parameters": [{"name": "project_id", "in": "path", "required": true, "schema": {"type": "string"}}], "security": [{"bearerAuth": []}]}
+    },
+    "/projects/{project_id}/work-items": {
+      "post": {"operationId": "createWorkItemState", "responses": {"200": {"description": "Successful response"}, "401": {"description": "Authentication required"}, "403": {"description": "Permission denied"}, "503": {"description": "Audit unavailable; action not executed"}}, "parameters": [{"name": "project_id", "in": "path", "required": true, "schema": {"type": "string"}}], "security": [{"bearerAuth": []}]}
+    },
+    "/projects/{project_id}/decisions": {
+      "post": {"operationId": "recordDecisionState", "responses": {"200": {"description": "Successful response"}, "401": {"description": "Authentication required"}, "403": {"description": "Permission denied"}, "503": {"description": "Audit unavailable; action not executed"}}, "parameters": [{"name": "project_id", "in": "path", "required": true, "schema": {"type": "string"}}], "security": [{"bearerAuth": []}]}
+    },
+    "/projects/{project_id}/risks": {
+      "post": {"operationId": "createRiskState", "responses": {"200": {"description": "Successful response"}, "401": {"description": "Authentication required"}, "403": {"description": "Permission denied"}, "503": {"description": "Audit unavailable; action not executed"}}, "parameters": [{"name": "project_id", "in": "path", "required": true, "schema": {"type": "string"}}], "security": [{"bearerAuth": []}]}
+    },
+    "/projects/{project_id}/blockers": {
+      "post": {"operationId": "createBlockerState", "responses": {"200": {"description": "Successful response"}, "401": {"description": "Authentication required"}, "403": {"description": "Permission denied"}, "503": {"description": "Audit unavailable; action not executed"}}, "parameters": [{"name": "project_id", "in": "path", "required": true, "schema": {"type": "string"}}], "security": [{"bearerAuth": []}]}
+    },
+    "/projects/{project_id}/improvements": {
+      "post": {"operationId": "createImprovementState", "responses": {"200": {"description": "Successful response"}, "401": {"description": "Authentication required"}, "403": {"description": "Permission denied"}, "503": {"description": "Audit unavailable; action not executed"}}, "parameters": [{"name": "project_id", "in": "path", "required": true, "schema": {"type": "string"}}], "security": [{"bearerAuth": []}]}
+    },
+    "/projects/{project_id}/activity": {
+      "post": {"operationId": "recordActivityState", "responses": {"200": {"description": "Successful response"}, "401": {"description": "Authentication required"}, "403": {"description": "Permission denied"}, "503": {"description": "Audit unavailable; action not executed"}}, "parameters": [{"name": "project_id", "in": "path", "required": true, "schema": {"type": "string"}}], "security": [{"bearerAuth": []}]}
+    },
+    "/chat": {
+      "post": {"operationId": "sendChat", "responses": {"200": {"description": "Successful response"}, "401": {"description": "Authentication required"}, "403": {"description": "Permission denied"}, "503": {"description": "Audit unavailable; action not executed"}}, "security": [{"bearerAuth": []}]}
+    }
+  },
+  "components": {
+    "schemas": {
+      "Project": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "description",
+          "status",
+          "priority",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "git_repo_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "language": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "framework": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "status": {
+            "type": "string"
+          },
+          "priority": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CreateProject": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "git_repo_url": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "framework": {
+            "type": "string"
+          }
+        }
+      },
+      "Task": {
+        "type": "object",
+        "required": [
+          "id",
+          "project_id",
+          "title",
+          "description",
+          "task_type",
+          "status",
+          "priority",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "project_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "task_type": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "priority": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CreateTask": {
+        "type": "object",
+        "required": [
+          "project_id",
+          "title"
+        ],
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "task_type": {
+            "type": "string"
+          },
+          "priority": {
+            "type": "string"
+          },
+          "test_commands": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "acceptance_criteria": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "Deployment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "project_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "environment": {
+            "type": "string"
+          },
+          "commit_sha": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "completed_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "health_check_passed": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "x-ui-reconciliation": {
+    "implemented": [
+      "project list/create",
+      "task list/detail/create",
+      "deployment list",
+      "task/deployment event stream"
+    ],
+    "removed_from_ui": [
+      "project detail/update/delete/start/pause",
+      "task update/delete",
+      "deployment create/rollback/external-link"
+    ]
+  }
+}
